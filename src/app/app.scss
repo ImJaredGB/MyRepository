@@ -1,0 +1,266 @@
+@font-face {
+  font-family: 'Nohemi-Medium';
+  src: url('../fonts/Nohemi-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi-Light';
+  src: url('../fonts/Nohemi-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* GENERAL */
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.page-container {
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+
+.page-container > section {
+  width: 100%;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  box-sizing: border-box;
+}
+
+/* SECTION 01: HOME */
+
+.home {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Nohemi-Medium', sans-serif;
+}
+
+/* LEFT SECTION */
+
+.intro {
+  display: flex;
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 128px 60px 52px;
+  background-color: #121212;
+  color: #FDFBF7;
+}
+
+.introduction {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.greeting {
+  font-family: 'Nohemi-Light', sans-serif;
+  font-size: 20px;
+  font-weight: 300;
+  color: #A2A2A2;
+}
+
+.introduction h1 {
+  margin: 32px 0 0;
+  font-family: 'Nohemi-Medium', sans-serif;
+  font-size: 110px;
+  font-weight: 500;
+  line-height: 1;
+  color: #FDFBF7;
+}
+
+.role {
+  display: block;
+  margin-top: auto;
+  font-family: 'Nohemi-Light', sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  color: #FDFBF7;
+  white-space: pre;
+}
+
+/* RIGHT SECTION */
+
+
+.technologies {
+  position: relative;
+  isolation: isolate;
+  background: #17132b;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding-left: 35px;
+  overflow: hidden;
+
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Gradiente animado */
+.technologies::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  z-index: -2;
+
+  background:
+    radial-gradient(ellipse at 20% 30%, #B5C7EB 0%, transparent 35%),
+    radial-gradient(ellipse at 75% 25%, #7548bd 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 80%, #247fa5 0%, transparent 40%),
+    radial-gradient(ellipse at 25% 75%, #E6E6FA 0%, transparent 35%),
+    #17132b;
+
+  background-size: 150% 150%;
+  animation: gradientFlow 14s ease-in-out infinite alternate;
+}
+
+.glass-lens {
+
+    position: absolute;
+
+    left: var(--lens-x);
+    top: var(--lens-y);
+
+    width: 190px;
+    max-width: 55vw;
+    aspect-ratio: 1;
+
+    z-index: 2;
+    pointer-events: none;
+
+    border-radius: 50%;
+
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    transition: opacity 450ms ease-in-out;
+
+    background:
+    radial-gradient(
+        circle at 30% 22%,
+        rgba(255, 255, 255, 0.07),
+        transparent 35%
+    ),
+    radial-gradient(
+        circle at 70% 75%,
+        rgba(255, 255, 255, 0.025),
+        transparent 50%
+    );
+
+    backdrop-filter: blur(1px) saturate(1.5) contrast(1.04);
+    -webkit-backdrop-filter: blur(1px) saturate(1.5) contrast(1.04);
+
+    box-shadow:
+    inset 0 0 20px rgba(255, 255, 255, 0.07),
+    inset 0 0 4px rgba(255, 255, 255, 0.25);
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+
+    transition: opacity 400ms ease;
+}
+
+.glass-lens.active {
+  opacity: 1;
+}
+
+/* Borde cromático */
+.glass-lens::before {
+  content: '';
+
+  position: absolute;
+  inset: -1px;
+
+  border-radius: inherit;
+  padding: 2px;
+
+  background: conic-gradient(
+    from 20deg,
+    rgba(255, 80, 120, 0.65),
+    rgba(80, 220, 255, 0.55),
+    rgba(255, 245, 140, 0.45),
+    rgba(170, 100, 255, 0.55),
+    rgba(255, 80, 120, 0.65)
+  );
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+/* Reflejo del cristal */
+.glass-lens::after {
+  content: '';
+
+  position: absolute;
+  inset: 4%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18),
+      transparent 22%,
+      transparent 75%,
+      rgba(255, 255, 255, 0.08)
+    );
+
+  pointer-events: none;
+}
+
+/* Tecnologías */
+.technology {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  font-family: 'Nohemi-Medium', sans-serif;
+  font-size: 100px;
+  color: #FFFFFF;
+  white-space: nowrap;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
+}
+
+.technology-letter {
+  display: inline-block;
+  opacity: 1;
+  transition: opacity 350ms ease-in-out;
+}
+
+.technology-letter.hidden {
+  opacity: 0;
+}
+
+/* SECTION 02: ABOUT */
+
+.about {
+  min-height: 100vh;
+  background: #FDFBF7;
+  color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nohemi-Medium', sans-serif;
+  font-size: 80px;
+}

@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Nohemi-Medium';
+  src: url('../../../fonts/Nohemi-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nohemi-Light';
+  src: url('../../../fonts/Nohemi-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100vh;
+
+  background-color: #121212;
+  color: #FDFBF7;
+
+  opacity: 1;
+  transform: translateY(0);
+
+  transition:
+    opacity 800ms cubic-bezier(0.76, 0, 0.24, 1),
+    transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+
+  &.fade-out {
+    opacity: 0;
+    transform: translateY(-15px);
+    pointer-events: none;
+  }
+}
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.percentage {
+  font-size: 200px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Nohemi-Medium', sans-serif;
+}
+
+.loading-text {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  color: rgba(253, 251, 247, 0.65);
+  font-family: 'Nohemi-Light', sans-serif;
+}
