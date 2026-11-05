@@ -21,12 +21,12 @@
       </div>
 
       <div
+        #technologySection
         class="technologies"
-        [style.--lens-x]="lensX + '%'"
-        [style.--lens-y]="lensY + '%'"
         (pointermove)="onTechnologyPointerMove($event)"
-
-        >
+        (pointerleave)="onTechnologyPointerLeave()"
+      >
+        <canvas #fluidCanvas class="fluid-canvas"></canvas>
 
         @for (technology of technologyLetters; track $index) {
           <div class="technology">
@@ -39,10 +39,8 @@
             }
           </div>
         }
-
-        <div class="glass-lens" [class.active]="mouseActive"></div>
-
       </div>
+
     </section>
 
     <!-- SECTION 02: ABOUT -->
@@ -54,7 +52,7 @@
 
         <p class="about-description">
           Desarrollador de software con 3 años de experiencia
-          en distintos lenguajes de programación.
+          en distintos programas y lenguajes de programación.
         </p>
 
         <p class="about-description secondary">
@@ -78,30 +76,285 @@
           </button>
         </div>
 
-        @if (!showBubbles) {
-          <div class="skills-grid">
-            @for (skill of skills; track skill) {
-              <span class="skill">{{ skill }}</span>
+        <div class="skills-visualization">
+
+          <!-- Vista de texto -->
+          <div
+            class="skills-grid"
+            [class.is-active]="!showBubbles"
+          >
+            @for (skill of skills; track skill; let i = $index) {
+              <span
+                class="skill"
+                [style.--item-index]="i"
+              >
+                {{ skill }}
+              </span>
             }
           </div>
-        } @else {
+
+          <!-- Vista de burbujas -->
           <div
             #bubbleArea
             class="bubble-area"
+            [class.is-active]="showBubbles"
             (mousemove)="onBubbleMouseMove($event)"
             (mouseleave)="onBubbleMouseLeave()"
           >
-            @for (bubble of skillBubbles; track bubble.name) {
+            @for (bubble of skillBubbles; track bubble.name; let i = $index) {
               <div
                 class="skill-bubble"
                 [style.width.px]="bubble.size"
                 [style.height.px]="bubble.size"
-                [style.transform]="'translate(' + bubble.x + 'px, ' + bubble.y + 'px)'">
+                [style.transform]="'translate(' + bubble.x + 'px, ' + bubble.y + 'px)'"
+                [style.--item-index]="i"
+              >
                 <span>{{ skillShortNames[bubble.name] }}</span>
               </div>
             }
           </div>
-        }
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- SECTION 03: PROJECTS -->
+
+    <section class="projects">
+
+      <header class="projects-header">
+        <h2>Proyectos</h2>
+        <p>Un recorrido por mi experiencia, proyectos y soluciones desarrolladas.</p>
+      </header>
+
+      <!-- FILE EXPLORER -->
+      <div class="file-explorer">
+
+        <section>
+          <h3>Projects</h3>
+
+          <div>
+            <button type="button">FuelPrice</button>
+            <button type="button">AutoPhoto</button>
+            <button type="button">Stayhere</button>
+          </div>
+        </section>
+
+        <section>
+          <h3>Experience</h3>
+
+          <div>
+            <button type="button">Wynix</button>
+            <button type="button">Agile Solutions</button>
+          </div>
+        </section>
+
+        <section>
+          <h3>Other Projects</h3>
+
+          <div>
+            <button type="button">Work Together</button>
+            <button type="button">NFC Access</button>
+            <button type="button">Ticket Manager</button>
+            <button type="button">Detector de blancos</button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div class="documents">
+
+        <!-- FUELPRICE -->
+        <article>
+          <h2>FuelPrice</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Aplicación web para consultar y comparar precios de carburantes,
+            visualizar sus variaciones y calcular el coste de repostaje.
+            Integra una API externa para obtener información actualizada
+            y una API propia para gestionar y proporcionar los datos.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Angular</li>
+            <li>TypeScript</li>
+            <li>Django</li>
+            <li>Python</li>
+            <li>PostgreSQL</li>
+            <li>REST API</li>
+          </ul>
+        </article>
+
+        <!-- AUTOPHOTO -->
+        <article>
+          <h2>AutoPhoto</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Aplicación de escritorio diseñada para automatizar la organización
+            de fotografías. Detecta unidades de almacenamiento extraíbles y
+            clasifica sus archivos automáticamente según su tipo, facilitando
+            la gestión de grandes cantidades de imágenes.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Python</li>
+            <li>CustomTkinter</li>
+            <li>Gestión de archivos y directorios</li>
+            <li>Automatización de procesos</li>
+          </ul>
+        </article>
+
+        <!-- STAYHERE -->
+        <article>
+          <h2>Stayhere</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Plataforma web y móvil orientada a facilitar la búsqueda y
+            publicación de alojamientos para estudiantes. Conecta a
+            estudiantes que buscan vivienda con propietarios que ofrecen
+            habitaciones o alojamientos próximos a centros educativos.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Python</li>
+            <li>Django</li>
+            <li>Android Studio</li>
+            <li>AWS</li>
+          </ul>
+        </article>
+
+        <!-- WYNIX -->
+        <article>
+          <h2>Wynix</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Participación en el diseño y desarrollo integral de la web
+            corporativa, coordinando un equipo de dos programadores junior
+            y gestionando decisiones del proyecto y solicitudes de cambios.
+            También desarrollé una tienda online de instrumentación industrial,
+            organizando y publicando cientos de referencias de productos.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>WordPress</li>
+            <li>WooCommerce</li>
+            <li>Diseño UI/UX</li>
+            <li>Gestión de contenidos</li>
+            <li>Coordinación de equipos</li>
+          </ul>
+        </article>
+
+        <!-- AGILE SOLUTIONS -->
+        <article>
+          <h2>Agile Solutions</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Creación de prototipos y wireframes para aplicaciones web y móviles,
+            definiendo estructuras e interfaces de usuario. También realicé
+            tareas de control de inventario y análisis de ventas mediante Excel,
+            identificando tendencias de consumo para orientar decisiones
+            de compra y reducir la inversión en productos de baja demanda.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Figma</li>
+            <li>Diseño UI/UX</li>
+            <li>Wireframing</li>
+            <li>Microsoft Excel</li>
+            <li>Análisis de datos</li>
+          </ul>
+        </article>
+
+        <!-- WORK TOGETHER -->
+        <article>
+          <h2>Work Together</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Sistema multiplataforma desarrollado para facilitar la comunicación
+            y notificación de incidencias dentro de un campus universitario.
+            Permite centralizar los avisos y facilitar su gestión.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Python</li>
+            <li>Django</li>
+            <li>Flutter</li>
+          </ul>
+        </article>
+
+        <!-- NFC ACCESS -->
+        <article>
+          <h2>NFC Access</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Aplicación móvil para gestionar el acceso a una piscina mediante
+            tarjetas NFC, sustituyendo los tickets físicos. Incorpora un sistema
+            de recompensas para mejorar la experiencia de los usuarios.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Android Studio</li>
+            <li>NFC</li>
+            <li>Railway</li>
+          </ul>
+        </article>
+
+        <!-- TICKET MANAGER -->
+        <article>
+          <h2>Ticket Manager</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Sistema de gestión de incidencias empresariales que permite
+            administrar usuarios, permisos, prioridades y estados de tickets,
+            facilitando el seguimiento y organización de solicitudes internas.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Python</li>
+            <li>Django</li>
+            <li>PostgreSQL</li>
+          </ul>
+        </article>
+
+        <!-- DETECTOR DE BLANCOS -->
+        <article>
+          <h2>Detector de blancos</h2>
+
+          <h3>Descripción</h3>
+          <p>
+            Herramienta de escritorio para procesar documentos PDF e imágenes,
+            detectar blancos mediante técnicas de procesamiento geométrico
+            y realizar recortes automáticos, reduciendo la intervención manual.
+          </p>
+
+          <h3>Tecnologías utilizadas</h3>
+          <ul>
+            <li>Python</li>
+            <li>PyMuPDF</li>
+            <li>Pillow</li>
+            <li>NumPy</li>
+            <li>SciPy</li>
+          </ul>
+        </article>
 
       </div>
 

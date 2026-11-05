@@ -57,7 +57,7 @@ html {
   box-sizing: border-box;
   min-height: 100vh;
   padding: 128px 60px 52px;
-  background-color: #121212;
+  background-color: #0e0e0e;
   color: #FDFBF7;
 }
 
@@ -98,37 +98,33 @@ html {
 
 
 .technologies {
-  position: relative;
-  isolation: isolate;
-  background: #17132b;
-  color: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 40px;
-  padding-left: 35px;
-  overflow: hidden;
+    position: relative;
+    isolation: isolate;
 
-  --mouse-x: 50%;
-  --mouse-y: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+
+    padding-left: 35px;
+    overflow: hidden;
+
+    background: #17132b;
+    color: #FFFFFF;
 }
 
-/* Gradiente animado */
-.technologies::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  z-index: -2;
+/* Fondo líquido WebGL */
 
-  background:
-    radial-gradient(ellipse at 20% 30%, #B5C7EB 0%, transparent 35%),
-    radial-gradient(ellipse at 75% 25%, #7548bd 0%, transparent 40%),
-    radial-gradient(ellipse at 70% 80%, #247fa5 0%, transparent 40%),
-    radial-gradient(ellipse at 25% 75%, #E6E6FA 0%, transparent 35%),
-    #17132b;
+.fluid-canvas {
+    position: absolute;
+    inset: 0;
 
-  background-size: 150% 150%;
-  animation: gradientFlow 14s ease-in-out infinite alternate;
+    width: 100%;
+    height: 100%;
+
+    display: block;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .glass-lens {
@@ -231,25 +227,28 @@ html {
 
 /* Tecnologías */
 .technology {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  font-family: 'Nohemi-Medium', sans-serif;
-  font-size: 100px;
-  color: #FFFFFF;
-  white-space: nowrap;
-  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
+    position: relative;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+
+    font-family: 'Nohemi-Medium', sans-serif;
+    font-size: 100px;
+    color: #FFFFFF;
+    white-space: nowrap;
+
+    text-shadow: 0 2px 15px rgba(0, 0, 0, 0.12);
 }
 
 .technology-letter {
-  display: inline-block;
-  opacity: 1;
-  transition: opacity 350ms ease-in-out;
+    display: inline-block;
+    opacity: 1;
+    transition: opacity 350ms ease-in-out;
 }
 
 .technology-letter.hidden {
-  opacity: 0;
+    opacity: 0;
 }
 
 /* SECTION 02: ABOUT */
@@ -313,81 +312,33 @@ html {
   font-size: 20px;
 }
 
-/* Tecnologías */
+
+/* TECNOLOGÍAS */
 
 .about-skills {
     display: flex;
     flex-direction: column;
 }
 
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 30px;
-  height: 340px;
-  flex-shrink: 0;
-}
-
 .skill {
-  padding: 18px 0;
+    padding: 18px 0;
+    border-bottom: 1px solid #D8D6D1;
 
-  border-bottom: 1px solid #D8D6D1;
+    font-family: 'Nohemi-Medium', sans-serif;
+    font-size: 19px;
+    color: #121212;
 
-  font-family: 'Nohemi-Medium', sans-serif;
-  font-size: 19px;
-  color: #121212;
-
-  transition:
-    color 250ms ease,
-    padding-left 250ms ease;
+    transition:
+        color 250ms ease,
+        padding-left 250ms ease;
 }
 
 .skill:hover {
-  color: #929292;
-  padding-left: 8px;
+    color: #929292;
+    padding-left: 8px;
 }
 
-@media (max-width: 900px) {
-    .about {
-    min-height: 100vh;
-    height: 100vh;
-    overflow: hidden;
-    }
-
-    .about-intro h2 {
-        font-size: 70px;
-    }
-
-    .about-description {
-        font-size: 22px;
-    }
-}
-
-@media (max-width: 500px) {
-    .about {
-        min-height: 100vh;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    .about-intro h2 {
-        font-size: 55px;
-    }
-
-    .about-description {
-        font-size: 19px;
-    }
-
-    .skills-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .skill {
-        font-size: 17px;
-    }
-}
-
-  /* Cabecera del stack tecnológico */
+/* CABECERA DEL STACK */
 
 .skills-header {
     display: flex;
@@ -408,6 +359,7 @@ html {
 
     border: 1px solid #D8D6D1;
     border-radius: 50%;
+
     background: transparent;
     color: #121212;
 
@@ -426,32 +378,53 @@ html {
     transform: rotate(90deg);
 }
 
-/* Área de las burbujas */
+/* ÁREA DE VISUALIZACIÓN */
 
-.bubble-area {
+.skills-visualization {
     position: relative;
-
     width: 100%;
     height: 340px;
-    flex-shrink: 0;
-
-    overflow: hidden;
-    box-sizing: border-box;
-
-    cursor: default;
-    user-select: none;
-    -webkit-user-select: none;
 }
 
-/* Burbujas */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 35px;
+    align-content: start;
+}
+
+.bubble-area {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.5s ease,
+        visibility 0s linear 0.65s;
+}
+
+.skills-grid.is-active,
+.bubble-area.is-active {
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 0.5s ease,
+        visibility 0s;
+}
+
+/* BURBUJAS */
+
 .skill-bubble {
     position: absolute;
     top: 0;
     left: 0;
-
-    cursor: default;
-    user-select: none;
-    -webkit-user-select: none;
 
     display: flex;
     align-items: center;
@@ -460,10 +433,11 @@ html {
     box-sizing: border-box;
     border-radius: 50%;
 
+    cursor: default;
     pointer-events: none;
     user-select: none;
+    -webkit-user-select: none;
 
-    /* Superficie transparente */
     background:
         radial-gradient(
             circle at 30% 25%,
@@ -478,7 +452,6 @@ html {
         ),
         rgba(190, 205, 220, 0.06);
 
-    /* Reflejos y relieve */
     box-shadow:
         inset 3px 3px 7px rgba(255, 255, 255, 0.75),
         inset -3px -4px 8px rgba(130, 150, 190, 0.12),
@@ -527,27 +500,25 @@ html {
     );
 }
 
-/* Pequeño reflejo superior */
+/* Reflejo superior */
 .skill-bubble::after {
     content: '';
 
     position: absolute;
+    top: 13%;
+    left: 19%;
 
     width: 35%;
     height: 12%;
 
-    top: 13%;
-    left: 19%;
-
     border-radius: 50%;
-
     background: rgba(255, 255, 255, 0.65);
 
     filter: blur(3px);
-
     transform: rotate(-35deg);
 }
 
+/* Texto de las burbujas */
 .skill-bubble span {
     position: relative;
     z-index: 1;
@@ -556,7 +527,6 @@ html {
     font-size: 11px;
     letter-spacing: 0.3px;
     text-align: center;
-
     color: #333333;
 
     cursor: default;
@@ -564,3 +534,169 @@ html {
     -webkit-user-select: none;
 }
 
+/* TRANSICIONES DEL STACK */
+
+/* Dispersión del texto */
+.skills-grid:not(.is-active) .skill {
+    animation: text-disperse 0.55s ease both;
+    animation-delay: calc(var(--item-index) * 15ms);
+}
+
+/* Direcciones de dispersión */
+.skills-grid .skill:nth-child(3n + 1) {
+    --scatter-x: -35px;
+    --scatter-y: -25px;
+}
+
+.skills-grid .skill:nth-child(3n + 2) {
+    --scatter-x: 30px;
+    --scatter-y: 35px;
+}
+
+.skills-grid .skill:nth-child(3n) {
+    --scatter-x: 15px;
+    --scatter-y: -40px;
+}
+
+/* Reaparición del texto */
+.skills-grid.is-active .skill {
+    animation: text-gather 0.65s ease both;
+    animation-delay: calc(var(--item-index) * 15ms);
+}
+
+/* Aparición de las burbujas */
+.bubble-area.is-active .skill-bubble {
+    animation: bubble-appear 0.65s ease both;
+    animation-delay: calc(var(--item-index) * 35ms);
+}
+
+/* Desaparición de las burbujas */
+.bubble-area:not(.is-active) .skill-bubble {
+    animation: bubble-disperse 0.5s ease both;
+    animation-delay: calc(var(--item-index) * 15ms);
+}
+
+/* KEYFRAMES */
+
+@keyframes text-disperse {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--scatter-x), var(--scatter-y)) scale(0.7);
+        filter: blur(5px);
+    }
+}
+
+@keyframes text-gather {
+    0% {
+        opacity: 0;
+        transform: translateY(15px) scale(0.8);
+        filter: blur(5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes bubble-appear {
+    0% {
+        opacity: 0;
+        scale: 0.35;
+        filter: blur(8px);
+    }
+
+    70% {
+        opacity: 1;
+        scale: 1.08;
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes bubble-disperse {
+    0% {
+        opacity: 1;
+        scale: 1;
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 0;
+        scale: 0.65;
+        filter: blur(8px);
+    }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .about {
+        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .about-intro h2 {
+        font-size: 70px;
+    }
+
+    .about-description {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 500px) {
+    .about-intro h2 {
+        font-size: 55px;
+    }
+
+    .about-description {
+        font-size: 19px;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .skill {
+        font-size: 17px;
+    }
+}
+
+/* SECTION 03: PROJECTS */
+
+/* Projects section */
+
+.projects {
+    background-color: #0e0e0e;
+    color: #FDFBF7;
+    padding: 60px 120px 120px;
+}
+
+.projects-header {
+    h2 {
+        font-family: 'Nohemi-Medium', sans-serif;
+        margin-bottom: 15px;
+        font-size: 90px;
+    }
+
+    p {
+        font-family: 'Nohemi-Light', sans-serif;
+        font-size: 26px;
+        color: #929292;
+        margin: 0;
+    }
+}
