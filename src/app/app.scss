@@ -255,12 +255,312 @@ html {
 /* SECTION 02: ABOUT */
 
 .about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+
+  width: 100%;
   min-height: 100vh;
+  box-sizing: border-box;
+
+  padding: 100px 8%;
+
   background: #FDFBF7;
   color: #121212;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
   font-family: 'Nohemi-Medium', sans-serif;
-  font-size: 80px;
+  gap: 100px;
 }
+
+/* Presentación */
+
+.about-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.about-label {
+  font-family: 'Nohemi-Light', sans-serif;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #929292;
+}
+
+.about-intro h2 {
+  margin: 30px 0 45px;
+
+  font-size: 90px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.about-description {
+  max-width: 520px;
+
+  margin: 0 0 22px;
+
+  font-family: 'Nohemi-Light', sans-serif;
+  font-size: 35px;
+  line-height: 1.5;
+  color: #333333;
+}
+
+.about-description.secondary {
+  background: linear-gradient(90deg, hsl(263, 68%, 60%), #247fa5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 20px;
+}
+
+/* Tecnologías */
+
+.about-skills {
+    display: flex;
+    flex-direction: column;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 30px;
+  height: 340px;
+  flex-shrink: 0;
+}
+
+.skill {
+  padding: 18px 0;
+
+  border-bottom: 1px solid #D8D6D1;
+
+  font-family: 'Nohemi-Medium', sans-serif;
+  font-size: 19px;
+  color: #121212;
+
+  transition:
+    color 250ms ease,
+    padding-left 250ms ease;
+}
+
+.skill:hover {
+  color: #929292;
+  padding-left: 8px;
+}
+
+@media (max-width: 900px) {
+    .about {
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    }
+
+    .about-intro h2 {
+        font-size: 70px;
+    }
+
+    .about-description {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 500px) {
+    .about {
+        min-height: 100vh;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .about-intro h2 {
+        font-size: 55px;
+    }
+
+    .about-description {
+        font-size: 19px;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .skill {
+        font-size: 17px;
+    }
+}
+
+  /* Cabecera del stack tecnológico */
+
+.skills-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 30px;
+    flex-shrink: 0;
+}
+
+.skills-toggle {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #D8D6D1;
+    border-radius: 50%;
+    background: transparent;
+    color: #121212;
+
+    font-size: 25px;
+    cursor: pointer;
+
+    transition:
+        background 250ms ease,
+        color 250ms ease,
+        transform 350ms ease;
+}
+
+.skills-toggle:hover {
+    background: #121212;
+    color: #FDFBF7;
+    transform: rotate(90deg);
+}
+
+/* Área de las burbujas */
+
+.bubble-area {
+    position: relative;
+
+    width: 100%;
+    height: 340px;
+    flex-shrink: 0;
+
+    overflow: hidden;
+    box-sizing: border-box;
+
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Burbujas */
+.skill-bubble {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    border-radius: 50%;
+
+    pointer-events: none;
+    user-select: none;
+
+    /* Superficie transparente */
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(255, 255, 255, 0.65) 0%,
+            rgba(255, 255, 255, 0.12) 18%,
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 75% 80%,
+            rgba(120, 180, 255, 0.12),
+            transparent 45%
+        ),
+        rgba(190, 205, 220, 0.06);
+
+    /* Reflejos y relieve */
+    box-shadow:
+        inset 3px 3px 7px rgba(255, 255, 255, 0.75),
+        inset -3px -4px 8px rgba(130, 150, 190, 0.12),
+        0 2px 8px rgba(80, 100, 130, 0.06);
+
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+
+    will-change: transform;
+}
+
+/* Reflejos iridiscentes */
+.skill-bubble::before {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: inherit;
+
+    background:
+        conic-gradient(
+            from 210deg,
+            transparent 0deg,
+            rgba(255, 130, 180, 0.55) 35deg,
+            rgba(150, 190, 255, 0.5) 75deg,
+            transparent 115deg,
+            transparent 180deg,
+            rgba(100, 220, 220, 0.45) 225deg,
+            rgba(190, 150, 255, 0.4) 260deg,
+            transparent 310deg
+        );
+
+    opacity: 0.55;
+
+    mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 3px),
+        #000 calc(100% - 1px)
+    );
+
+    -webkit-mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 3px),
+        #000 calc(100% - 1px)
+    );
+}
+
+/* Pequeño reflejo superior */
+.skill-bubble::after {
+    content: '';
+
+    position: absolute;
+
+    width: 35%;
+    height: 12%;
+
+    top: 13%;
+    left: 19%;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    filter: blur(3px);
+
+    transform: rotate(-35deg);
+}
+
+.skill-bubble span {
+    position: relative;
+    z-index: 1;
+
+    font-family: 'Nohemi-Medium', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    text-align: center;
+
+    color: #333333;
+
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+

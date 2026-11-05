@@ -47,7 +47,64 @@
 
     <!-- SECTION 02: ABOUT -->
     <section class="about">
-      <span>Sobre mí</span>
+
+      <div class="about-intro">
+
+        <h2>Sobre mí</h2>
+
+        <p class="about-description">
+          Desarrollador de software con 3 años de experiencia
+          en distintos lenguajes de programación.
+        </p>
+
+        <p class="about-description secondary">
+          Apasionado por la búsqueda de soluciones mediante
+          software, hambriento de conocimiento.
+        </p>
+      </div>
+
+      <div class="about-skills">
+
+        <div class="skills-header">
+          <span class="about-label">STACK TECNOLÓGICO</span>
+
+          <button
+            class="skills-toggle"
+            type="button"
+            (click)="toggleSkillsView()"
+            [attr.aria-label]="showBubbles ? 'Mostrar tabla' : 'Mostrar burbujas'"
+            title="Cambiar visualización">
+            <span>⟳</span>
+          </button>
+        </div>
+
+        @if (!showBubbles) {
+          <div class="skills-grid">
+            @for (skill of skills; track skill) {
+              <span class="skill">{{ skill }}</span>
+            }
+          </div>
+        } @else {
+          <div
+            #bubbleArea
+            class="bubble-area"
+            (mousemove)="onBubbleMouseMove($event)"
+            (mouseleave)="onBubbleMouseLeave()"
+          >
+            @for (bubble of skillBubbles; track bubble.name) {
+              <div
+                class="skill-bubble"
+                [style.width.px]="bubble.size"
+                [style.height.px]="bubble.size"
+                [style.transform]="'translate(' + bubble.x + 'px, ' + bubble.y + 'px)'">
+                <span>{{ skillShortNames[bubble.name] }}</span>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+
     </section>
 
   </main>
