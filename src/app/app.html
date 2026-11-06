@@ -1,12 +1,8 @@
-@if (isLoading) {
-  <app-preloader
-    (loadingComplete)="onLoadingComplete()">
-  </app-preloader>
-} @else {
-  <main class="page-container" #pageContainer>
+@if (!isLoading) {
+  <main class="page-container" #pageContainer [class.intro-ready]="introReady">
 
     <!-- SECTION 1: HOME -->
-    <section class="home">
+    <section class="home" data-theme="dark">
 
       <div class="intro">
         <div class="introduction">
@@ -44,7 +40,7 @@
     </section>
 
     <!-- SECTION 2: ABOUT -->
-    <section class="about">
+    <section class="about" data-theme="light">
 
       <div class="about-intro">
 
@@ -56,8 +52,9 @@
         </p>
 
         <p class="about-description secondary">
-          Apasionado por la búsqueda de soluciones mediante
-          software, hambriento de conocimiento.
+          @for (word of aboutWords; track $index) {
+            <span class="word" [attr.data-word]="word">{{ word }}</span>
+          }
         </p>
       </div>
 
@@ -122,7 +119,7 @@
 
     <!-- SECTION 3: PROJECTS -->
 
-    <section class="projects">
+    <section class="projects" data-theme="dark">
 
       <header class="projects-header">
         <h2>Proyectos</h2>
@@ -350,7 +347,7 @@
           <p>
             Herramienta de escritorio para procesar documentos PDF e imágenes,
             detectar blancos mediante técnicas de procesamiento geométrico
-            y realizar recortes au  tomáticos, reduciendo la intervención manual.
+            y realizar recortes automáticos, reduciendo la intervención manual.
           </p>
 
           <h3>Tecnologías utilizadas</h3>
@@ -369,7 +366,7 @@
 
 
     <!-- SECTION 04: CONTACT -->
-    <section class="contact">
+    <section class="contact" data-theme="light">
 
       <div class="contact-intro">
         <h2>¿Te interesa mi perfil?</h2>
@@ -395,7 +392,7 @@
 
           <a
             class="contact-link"
-            href="https://www.linkedin.com/in/tu-perfil"
+            href="https://www.linkedin.com/in/jared-garcia-borja/"
             target="_blank"
             rel="noopener noreferrer">
             <span>LinkedIn</span>
@@ -407,7 +404,7 @@
 
           <a
             class="contact-link"
-            href="https://github.com/tu-usuario"
+            href="https://github.com/ImJaredGB"
             target="_blank"
             rel="noopener noreferrer">
             <span>GitHub</span>
@@ -434,4 +431,12 @@
     </section>
 
   </main>
+}
+
+@if (showPreloader) {
+  <app-preloader
+    (loadingComplete)="onLoadingComplete()"
+    (revealStart)="onRevealStart()"
+    (revealEnd)="onRevealEnd()">
+  </app-preloader>
 }

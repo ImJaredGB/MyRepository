@@ -1,4 +1,8 @@
-<div class="preloader" [class.fade-out]="isFadingOut">
+<div
+  class="preloader"
+  [class.is-leaving]="isLeaving"
+  [class.is-opening]="isOpening">
+
   <div class="loader-content">
     <span class="percentage">
       {{ progress.toString().padStart(2, '0') }}%
@@ -6,4 +10,7 @@
 
     <p class="loading-text">Cargando experiencia</p>
   </div>
+
+  <!-- Línea fina que marca el borde del cuadrado mientras se abre -->
+  <div class="reveal-frame" aria-hidden="true"></div>
 </div>

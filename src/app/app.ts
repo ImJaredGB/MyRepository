@@ -97,6 +97,15 @@ export class App implements OnDestroy {
   folderFrontPath = '';
   folderSize = { w: 0, h: 0 };
   folderTabWidth = FOLDER_SHAPE.tabWidth;
+    // Texto secundario de "Sobre mí" (una palabra por span)
+  aboutWords =
+    'Apasionado por la búsqueda de soluciones mediante software, hambriento de conocimiento.'
+      .split(' ');
+
+  // Tema de fondo según la sección visible
+  private themeSections: HTMLElement[] = [];
+  private themeFrame?: number;
+  private readonly themeLine = 0.55; // altura del viewport donde "cambia" de sección
 
   @ViewChild('folder')
   folder?: ElementRef<HTMLDivElement>;
@@ -198,6 +207,8 @@ export class App implements OnDestroy {
   private lastBubbleFrame = 0;
 
   isLoading: boolean = true;
+  showPreloader = true;
+  introReady = false;
 
   private technologyGroups = [
     ['Python', 'SQL', 'JS', 'Django'],
@@ -237,7 +248,19 @@ export class App implements OnDestroy {
       this.initializeFluidBackground();
       this.initializeProjectsObserver();
       this.initializeFolderOutline();
+      this.initializeThemeScroll();
     });
+  }
+
+  onRevealStart(): void {
+    // Arranca la animación de entrada de la portada
+    this.introReady = true;
+    this.cdr.detectChanges();
+  }
+
+  onRevealEnd(): void {
+    this.showPreloader = false;
+    this.cdr.detectChanges();
   }
 
   private startTechnologyCycle(): void {
@@ -331,6 +354,12 @@ export class App implements OnDestroy {
     this.folderResizeObserver?.disconnect();
     this.documentsPanel?.nativeElement.removeEventListener('scroll', this.onProjectsScroll);
     clearTimeout(this.scrollReleaseTimer);
+
+    this.pageContainer?.nativeElement.removeEventListener('scroll', this.onPageScroll);
+
+    if (this.themeFrame !== undefined) {
+      cancelAnimationFrame(this.themeFrame);
+    }
 
     if (this.cycleTimer) {
       clearTimeout(this.cycleTimer);
@@ -644,6 +673,53 @@ export class App implements OnDestroy {
 
     this.fluidAnimationFrame = requestAnimationFrame(this.animateFluidBackground);
   };
+
+    private initializeThemeScroll(): void {
+    const container = this.pageContainer?.nativeElement;
+
+    if (!container || this.themeSections.length) return;
+
+    this.themeSections = Array.from(
+      container.querySelectorAll<HTMLElement>(':scope > section[data-theme]')
+    );
+
+    container.addEventListener('scroll', this.onPageScroll, { passive: true });
+
+    this.updateTheme();
+  }
+
+  private onPageScroll = (): void => {
+    if (this.themeFrame !== undefined) return;
+
+    this.themeFrame = requestAnimationFrame(() => {
+      this.themeFrame = undefined;
+      this.updateTheme();
+    });
+  };
+
+  private updateTheme(): void {
+    const container = this.pageContainer?.nativeElement;
+
+    if (!container || !this.themeSections.length) return;
+
+    const rect = container.getBoundingClientRect();
+    const line = rect.top + rect.height * this.themeLine;
+
+    // La sección activa es la última cuyo borde superior ya cruzó la línea
+    let active = this.themeSections[0];
+
+    for (const section of this.themeSections) {
+      if (section.getBoundingClientRect().top <= line) {
+        active = section;
+      }
+    }
+
+    const theme = active.dataset['theme'] ?? 'dark';
+
+    if (container.dataset['theme'] !== theme) {
+      container.dataset['theme'] = theme;
+    }
+  }
 
   scrollToTop(): void {
     this.pageContainer?.nativeElement.scrollTo({

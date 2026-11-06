@@ -33,11 +33,38 @@ html {
   scroll-behavior: smooth;
 }
 
+@property --bg        { syntax: '<color>'; inherits: true; initial-value: #0e0e0e; }
+@property --fg        { syntax: '<color>'; inherits: true; initial-value: #FDFBF7; }
+@property --text-soft { syntax: '<color>'; inherits: true; initial-value: #cfcfcf; }
+@property --line      { syntax: '<color>'; inherits: true; initial-value: rgba(253, 251, 247, 0.2); }
+
 .page-container {
+  // Tema oscuro (por defecto)
+  --bg: #0e0e0e;
+  --fg: #FDFBF7;
+  --text-soft: #cfcfcf;
+  --line: rgba(253, 251, 247, 0.2);
+
   width: 100%;
   height: 100vh;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
+
+  background-color: var(--bg);
+  color: var(--fg);
+
+  transition:
+    --bg 700ms cubic-bezier(0.4, 0, 0.2, 1),
+    --fg 700ms cubic-bezier(0.4, 0, 0.2, 1),
+    --text-soft 700ms cubic-bezier(0.4, 0, 0.2, 1),
+    --line 700ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-container[data-theme='light'] {
+  --bg: #FDFBF7;
+  --fg: #121212;
+  --text-soft: #333333;
+  --line: #D8D6D1;
 }
 
 .page-container > section {
@@ -65,8 +92,6 @@ html {
   box-sizing: border-box;
   min-height: 100vh;
   padding: 128px 60px 52px;
-  background-color: #0e0e0e;
-  color: #FDFBF7;
 }
 
 .introduction {
@@ -89,7 +114,6 @@ html {
   font-size: 110px;
   font-weight: 500;
   line-height: 1;
-  color: #FDFBF7;
 }
 
 .role {
@@ -98,7 +122,6 @@ html {
   font-family: 'Nohemi-Light', sans-serif;
   font-size: 40px;
   font-weight: 300;
-  color: #FDFBF7;
   white-space: pre;
 }
 
@@ -259,6 +282,68 @@ html {
     opacity: 0;
 }
 
+
+
+/* ANIMACIÓN DE ENTRADA (solo en la primera carga) */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.greeting,
+.introduction h1,
+.role,
+.technology {
+  animation: rise-in 1100ms cubic-bezier(0.22, 1, 0.36, 1) backwards paused;
+}
+
+.greeting                    { animation-delay: 100ms; }
+.introduction h1             { animation-delay: 220ms; }
+.role                        { animation-delay: 340ms; }
+
+.technology:nth-of-type(1)   { animation-delay: 300ms; }
+.technology:nth-of-type(2)   { animation-delay: 420ms; }
+.technology:nth-of-type(3)   { animation-delay: 540ms; }
+.technology:nth-of-type(4)   { animation-delay: 660ms; }
+
+.fluid-canvas {
+  animation: fade-in 1400ms ease 200ms backwards paused;
+}
+
+.intro-ready {
+  .greeting,
+  .introduction h1,
+  .role,
+  .technology,
+  .fluid-canvas {
+    animation-play-state: running;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .greeting,
+  .introduction h1,
+  .role,
+  .technology,
+  .fluid-canvas {
+    animation: none;
+  }
+}
+
 /* SECTION 02: ABOUT */
 
 .about {
@@ -271,9 +356,6 @@ html {
   box-sizing: border-box;
 
   padding: 100px 8%;
-
-  background: #FDFBF7;
-  color: #121212;
 
   font-family: 'Nohemi-Medium', sans-serif;
   gap: 100px;
@@ -310,15 +392,49 @@ html {
   font-family: 'Nohemi-Light', sans-serif;
   font-size: 35px;
   line-height: 1.5;
-  color: #333333;
+  color: var(--text-soft);
 }
 
 .about-description.secondary {
-  background: linear-gradient(90deg, hsl(263, 68%, 60%), #247fa5);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   font-size: 20px;
+  color: var(--fg);
 }
+
+.about-description.secondary .word {
+  position: relative;
+  display: inline-block;
+  margin-right: 0.3em;
+
+  transition: color 350ms ease;
+
+  // Capa con degradado, oculta hasta el hover
+  &::after {
+    content: attr(data-word);
+
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(90deg, hsl(263, 68%, 60%), #247fa5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 350ms ease;
+  }
+
+  &:hover {
+    color: transparent;
+
+    &::after {
+      opacity: 1;
+    }
+  }
+}
+
 
 
 /* TECNOLOGÍAS */
@@ -330,11 +446,11 @@ html {
 
 .skill {
     padding: 18px 0;
-    border-bottom: 1px solid #D8D6D1;
+    border-bottom: 1px solid var(--line);
 
     font-family: 'Nohemi-Medium', sans-serif;
     font-size: 19px;
-    color: #121212;
+    color: var(--fg);
 
     transition:
         color 250ms ease,
@@ -365,11 +481,11 @@ html {
     align-items: center;
     justify-content: center;
 
-    border: 1px solid #D8D6D1;
+    border: 1px solid var(--line);
     border-radius: 50%;
 
     background: transparent;
-    color: #121212;
+    color: var(--fg);
 
     font-size: 25px;
     cursor: pointer;
@@ -381,8 +497,8 @@ html {
 }
 
 .skills-toggle:hover {
-    background: #121212;
-    color: #FDFBF7;
+    background: var(--fg);
+    color: var(--bg);
     transform: rotate(90deg);
 }
 
@@ -535,7 +651,7 @@ html {
     font-size: 11px;
     letter-spacing: 0.3px;
     text-align: center;
-    color: #333333;
+    color: var(--text-soft);
 
     cursor: default;
     user-select: none;
@@ -704,8 +820,6 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     box-sizing: border-box;
     padding: 60px 120px;
 
-    background-color: #0e0e0e;
-    color: #FDFBF7;
     font-family: 'Nohemi-Medium', sans-serif;
 }
 
@@ -789,7 +903,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
         bottom: 2px;
 
         height: 1px;
-        background: #FDFBF7;
+        background: var(--fg);
 
         transform: scaleX(0);
         transform-origin: right; // al desaparecer se recoge hacia la derecha
@@ -798,11 +912,11 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     }
 
     &:hover {
-        color: #FDFBF7;
+        color: var(--fg);
     }
 
     &.active {
-        color: #FDFBF7;
+        color: var(--fg);
 
         &::after {
             transform: scaleX(1);
@@ -811,7 +925,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     }
 
     &:focus-visible {
-        outline: 1px solid rgba(255, 255, 255, 0.5);
+        outline: 1px solid var(--fg);
         outline-offset: 2px;
     }
 }
@@ -836,7 +950,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
 .folder-line {
     fill: none;
-    stroke: #FDFBF7;
+    stroke: var(--fg);
     stroke-width: 1.2;
     stroke-linejoin: round;
 
@@ -861,7 +975,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     font-size: 15px;
     letter-spacing: 0.3px;
     line-height: var(--tab-h);
-    color: #FDFBF7;
+    color: var(--fg);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -892,7 +1006,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     }
 
     &:focus-visible {
-        outline: 1px dashed rgba(255, 255, 255, 0.2);
+        outline: 1px dashed var(--line);
         outline-offset: -8px;
     }
 
@@ -934,7 +1048,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
             font-size: 18px;
             font-weight: 300;
             line-height: 1.6;
-            color: #cfcfcf;
+            color: var(--text-soft);
         }
 
         ul {
@@ -954,20 +1068,12 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
             font-family: 'Nohemi-Medium', sans-serif;
             font-size: 14px;
             font-weight: 500;
-            color: #FDFBF7;
+            color: var(--fg);
 
             transition: color 250ms ease;
 
             &:hover {
                 color: #247fa5;
-            }
-
-            &:hover::before {
-                opacity: 1;
-            }
-
-            &:hover::after {
-                opacity: 0.6;
             }
         }
     }
@@ -1042,8 +1148,6 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 
     padding: 72px 8% 100px;
 
-    background: #FDFBF7;
-    color: #121212;
     font-family: 'Nohemi-Light', sans-serif;
 }
 
@@ -1057,7 +1161,6 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
         font-size: clamp(44px, 5.6vw, 84px);
         font-weight: 500;
         line-height: 1;
-        color: #121212;
     }
 }
 
@@ -1069,7 +1172,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     font-size: 24px;
     font-weight: 300;
     line-height: 1.5;
-    color: #333333;
+    color: var(--text-soft);
 }
 
 /* Bloques: Contacta / Conecta */
@@ -1097,12 +1200,12 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     justify-content: space-between;
 
     padding: 16px 0;
-    border-bottom: 1px solid #D8D6D1;
+    border-bottom: 1px solid var(--line);
 
     font-family: 'Nohemi-Light', sans-serif;
     font-size: 24px;
     font-weight: 300;
-    color: #121212;
+    color: var(--fg);
     text-decoration: none;
     cursor: pointer;
 
@@ -1117,7 +1220,7 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     }
 
     &:focus-visible {
-        outline: 1px solid #121212;
+        outline: 1px solid var(--fg);
         outline-offset: 4px;
     }
 }
@@ -1150,11 +1253,11 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     width: 52px;
     height: 52px;
 
-    border: 1px solid #121212;
+    border: 1px solid var(--fg);
     border-radius: 50%;
 
     background: transparent;
-    color: #121212;
+    color: var(--fg);
     cursor: pointer;
 
     transition:
@@ -1174,13 +1277,13 @@ $folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
     }
 
     &:hover {
-        background: #121212;
-        color: #FDFBF7;
+        background: var(--fg);
+        color: var(--bg);
         transform: translateY(-4px);
     }
 
     &:focus-visible {
-        outline: 1px solid #121212;
+        outline: 1px solid var(--fg);
         outline-offset: 4px;
     }
 }
