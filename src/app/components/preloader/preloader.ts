@@ -1,16 +1,24 @@
-
 import {
-  Component,
-  OnInit,
-  OnDestroy,
   ChangeDetectorRef,
-  Output,
-  EventEmitter
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output
 } from '@angular/core';
 
+// Tamaño mínimo para ver la página.
+// Debe coincidir con $min-width y $min-height de app.scss
+const MIN_WIDTH = 1280;
+const MIN_HEIGHT = 640;
+
+// Tiempos en ms. OPEN_DURATION debe coincidir con $open-duration de preloader.scss
+const TICK = 60;
 const HOLD_AT_100 = 300;     // se queda un instante mostrando 100%
 const LEAVE_TO_OPEN = 500;   // desde que el texto se va hasta que empieza a abrirse
 const OPEN_DURATION = 1300;
+
+type Phase = 'counting' | 'holding' | 'leaving' | 'opening' | 'done';
 
 @Component({
   selector: 'app-preloader',
@@ -33,53 +41,96 @@ export class Preloader implements OnInit, OnDestroy {
   isLeaving = false;
   isOpening = false;
 
-  private counter?: ReturnType<typeof setInterval>;
-  private timers: ReturnType<typeof setTimeout>[] = [];
+  private phase: Phase = 'counting';
+  private phaseElapsed = 0;
+  private ticker?: ReturnType<typeof setInterval>;
+
+  // ¿La pantalla es lo bastante grande para mostrar la experiencia?
+  private readonly screenQuery = window.matchMedia(
+    `(min-width: ${MIN_WIDTH}px) and (min-height: ${MIN_HEIGHT}px)`
+  );
+
+  private canRun = this.screenQuery.matches;
+
+  private onScreenChange = (event: MediaQueryListEvent): void => {
+    this.canRun = event.matches;
+  };
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // Contador simulado. Si tu carga es real, sustitúyelo por tu lógica
-    // y llama a this.finish() cuando llegue a 100.
-    this.counter = setInterval(() => {
-      this.progress = Math.min(
-        100,
-        this.progress + 1 + Math.floor(Math.random() * 4)
-      );
-      this.cdr.markForCheck();
+    this.screenQuery.addEventListener('change', this.onScreenChange);
 
-      if (this.progress === 100) {
-        clearInterval(this.counter);
-        this.finish();
-      }
-    }, 60);
+    // Un único reloj lleva toda la secuencia. Si la pantalla es pequeña,
+    // no avanza nada hasta que vuelva a ser grande.
+    this.ticker = setInterval(() => this.tick(), TICK);
   }
 
-  private finish(): void {
-    this.schedule(() => {
-      // 1) El texto se va y la página principal se monta debajo
-      this.isLeaving = true;
-      this.cdr.markForCheck();
-      this.loadingComplete.emit();
+  private tick(): void {
+    // Una vez que el cuadrado empezó a abrirse, la apertura termina sola
+    if (!this.canRun && this.phase !== 'opening') return;
 
-      this.schedule(() => {
-        // 2) El cuadrado empieza a abrirse
-        this.isOpening = true;
-        this.cdr.markForCheck();
-        this.revealStart.emit();
+    switch (this.phase) {
 
-        // 3) Cuando termina, se avisa para quitar el preloader
-        this.schedule(() => this.revealEnd.emit(), OPEN_DURATION + 60);
-      }, LEAVE_TO_OPEN);
-    }, HOLD_AT_100);
+      case 'counting':
+        // Contador simulado. Si tu carga es real, sustitúyelo por tu lógica
+        // y pasa a 'holding' cuando llegue a 100.
+        this.progress = Math.min(
+          100,
+          this.progress + 1 + Math.floor(Math.random() * 4)
+        );
+
+        if (this.progress === 100) {
+          this.goTo('holding');
+        }
+        break;
+
+      case 'holding':
+        this.wait(HOLD_AT_100, () => {
+          // El texto se va y la página principal se monta debajo
+          this.isLeaving = true;
+          this.loadingComplete.emit();
+          this.goTo('leaving');
+        });
+        break;
+
+      case 'leaving':
+        this.wait(LEAVE_TO_OPEN, () => {
+          // El cuadrado empieza a abrirse
+          this.isOpening = true;
+          this.revealStart.emit();
+          this.goTo('opening');
+        });
+        break;
+
+      case 'opening':
+        this.wait(OPEN_DURATION + 60, () => {
+          this.revealEnd.emit();
+          this.goTo('done');
+          clearInterval(this.ticker);
+        });
+        break;
+    }
+
+    this.cdr.markForCheck();
   }
 
-  private schedule(fn: () => void, delay: number): void {
-    this.timers.push(setTimeout(fn, delay));
+  private goTo(phase: Phase): void {
+    this.phase = phase;
+    this.phaseElapsed = 0;
+  }
+
+  // Cuenta tiempo solo mientras la pantalla es grande
+  private wait(duration: number, next: () => void): void {
+    this.phaseElapsed += TICK;
+
+    if (this.phaseElapsed >= duration) {
+      next();
+    }
   }
 
   ngOnDestroy(): void {
-    clearInterval(this.counter);
-    this.timers.forEach(timer => clearTimeout(timer));
+    clearInterval(this.ticker);
+    this.screenQuery.removeEventListener('change', this.onScreenChange);
   }
 }
