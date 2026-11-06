@@ -3,9 +3,9 @@
     (loadingComplete)="onLoadingComplete()">
   </app-preloader>
 } @else {
-  <main class="page-container">
+  <main class="page-container" #pageContainer>
 
-    <!-- SECTION 01: HOME -->
+    <!-- SECTION 1: HOME -->
     <section class="home">
 
       <div class="intro">
@@ -43,7 +43,7 @@
 
     </section>
 
-    <!-- SECTION 02: ABOUT -->
+    <!-- SECTION 2: ABOUT -->
     <section class="about">
 
       <div class="about-intro">
@@ -120,7 +120,7 @@
 
     </section>
 
-    <!-- SECTION 03: PROJECTS -->
+    <!-- SECTION 3: PROJECTS -->
 
     <section class="projects">
 
@@ -130,45 +130,52 @@
       </header>
 
       <!-- FILE EXPLORER -->
-      <div class="file-explorer">
+      <nav class="file-explorer" aria-label="Explorador de proyectos">
+        @for (group of projectGroups; track group.title) {
+          <div class="explorer-group">
+            <h3 class="explorer-title">{{ group.title }}</h3>
 
-        <section>
-          <h3>Projects</h3>
-
-          <div>
-            <button type="button">FuelPrice</button>
-            <button type="button">AutoPhoto</button>
-            <button type="button">Stayhere</button>
+            <div class="explorer-files">
+              @for (item of group.items; track item.id) {
+                <button
+                  type="button"
+                  class="file"
+                  [class.active]="activeProject === item.id"
+                  [attr.aria-current]="activeProject === item.id ? 'true' : null"
+                  (click)="selectProject(item.id)">
+                  {{ item.label }}
+                </button>
+              }
+            </div>
           </div>
-        </section>
-
-        <section>
-          <h3>Experience</h3>
-
-          <div>
-            <button type="button">Wynix</button>
-            <button type="button">Agile Solutions</button>
-          </div>
-        </section>
-
-        <section>
-          <h3>Other Projects</h3>
-
-          <div>
-            <button type="button">Work Together</button>
-            <button type="button">NFC Access</button>
-            <button type="button">Ticket Manager</button>
-            <button type="button">Detector de blancos</button>
-          </div>
-        </section>
-
-      </div>
+        }
+      </nav>
 
       <!-- DOCUMENTS -->
-      <div class="documents">
+      <div
+        #folder
+        class="folder"
+        [style.--tab-h]="folderShape.tabHeight + 'px'"
+        [style.--tab-w]="folderTabWidth + 'px'"
+        [style.--front-top]="(folderShape.tabHeight + folderShape.frontGap) + 'px'">
+
+        <svg
+          class="folder-outline"
+          aria-hidden="true"
+          [attr.viewBox]="'0 0 ' + folderSize.w + ' ' + folderSize.h">
+
+          <!-- Contorno: pestaña + cuerpo -->
+          <path class="folder-line" [attr.d]="folderPath" />
+          <!-- Borde superior de la "hoja" frontal -->
+          <path class="folder-line front" [attr.d]="folderFrontPath" />
+        </svg>
+
+        <span class="folder-tab">{{ activeProjectLabel }}</span>
+
+        <div #documentsPanel class="documents" tabindex="0">
 
         <!-- FUELPRICE -->
-        <article>
+        <article id="fuelprice">
           <h2>FuelPrice</h2>
 
           <h3>Descripción</h3>
@@ -191,7 +198,7 @@
         </article>
 
         <!-- AUTOPHOTO -->
-        <article>
+        <article id="autophoto">
           <h2>AutoPhoto</h2>
 
           <h3>Descripción</h3>
@@ -212,7 +219,7 @@
         </article>
 
         <!-- STAYHERE -->
-        <article>
+        <article id="stayhere">
           <h2>Stayhere</h2>
 
           <h3>Descripción</h3>
@@ -233,7 +240,7 @@
         </article>
 
         <!-- WYNIX -->
-        <article>
+        <article id="wynix">
           <h2>Wynix</h2>
 
           <h3>Descripción</h3>
@@ -256,7 +263,7 @@
         </article>
 
         <!-- AGILE SOLUTIONS -->
-        <article>
+        <article id="agile-solutions">
           <h2>Agile Solutions</h2>
 
           <h3>Descripción</h3>
@@ -279,7 +286,7 @@
         </article>
 
         <!-- WORK TOGETHER -->
-        <article>
+        <article id="work-together">
           <h2>Work Together</h2>
 
           <h3>Descripción</h3>
@@ -298,7 +305,7 @@
         </article>
 
         <!-- NFC ACCESS -->
-        <article>
+        <article id="nfc-access">
           <h2>NFC Access</h2>
 
           <h3>Descripción</h3>
@@ -317,7 +324,7 @@
         </article>
 
         <!-- TICKET MANAGER -->
-        <article>
+        <article id="ticket-manager">
           <h2>Ticket Manager</h2>
 
           <h3>Descripción</h3>
@@ -336,14 +343,14 @@
         </article>
 
         <!-- DETECTOR DE BLANCOS -->
-        <article>
+        <article id="detector-blancos">
           <h2>Detector de blancos</h2>
 
           <h3>Descripción</h3>
           <p>
             Herramienta de escritorio para procesar documentos PDF e imágenes,
             detectar blancos mediante técnicas de procesamiento geométrico
-            y realizar recortes automáticos, reduciendo la intervención manual.
+            y realizar recortes au  tomáticos, reduciendo la intervención manual.
           </p>
 
           <h3>Tecnologías utilizadas</h3>
@@ -357,6 +364,72 @@
         </article>
 
       </div>
+      </div>
+    </section>
+
+
+    <!-- SECTION 04: CONTACT -->
+    <section class="contact">
+
+      <div class="contact-intro">
+        <h2>¿Te interesa mi perfil?</h2>
+
+        <p class="contact-message">
+          Si mi perfil encaja con lo que buscas, estaré encantado
+          de conversar sobre cómo puedo aportar a tu equipo.
+        </p>
+      </div>
+
+      <div class="contact-links">
+
+        <div class="contact-group">
+          <h3 class="contact-label">Contacta</h3>
+
+          <a class="contact-link" href="mailto:jaredalejandro.gb@gmail.com">
+            jaredalejandro.gb@gmail.com
+          </a>
+        </div>
+
+        <div class="contact-group">
+          <h3 class="contact-label">Conecta</h3>
+
+          <a
+            class="contact-link"
+            href="https://www.linkedin.com/in/tu-perfil"
+            target="_blank"
+            rel="noopener noreferrer">
+            <span>LinkedIn</span>
+
+            <svg class="contact-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>
+          </a>
+
+          <a
+            class="contact-link"
+            href="https://github.com/tu-usuario"
+            target="_blank"
+            rel="noopener noreferrer">
+            <span>GitHub</span>
+
+            <svg class="contact-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9" />
+            </svg>
+          </a>
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        class="back-to-top"
+        (click)="scrollToTop()"
+        aria-label="Volver al inicio"
+        title="Volver al inicio">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 19V5M5 12l7-7 7 7" />
+        </svg>
+      </button>
 
     </section>
 

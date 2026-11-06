@@ -23,6 +23,16 @@ const FLUID = {
   maxSpeed: 0.035      // límite de velocidad del cursor
 };
 
+// Geometría de la carpeta (en px). Controla el dibujo del contorno
+const FOLDER_SHAPE = {
+  tabHeight: 44,   // alto de la pestaña
+  tabWidth: 240,   // ancho de la pestaña (incluye la curva de bajada)
+  tabRadius: 16,   // redondeo de la esquina superior izquierda de la pestaña
+  curve: 36,       // longitud de la curva que baja de la pestaña al cuerpo
+  radius: 22,      // redondeo de las esquinas del cuerpo
+  frontGap: 14     // separación entre el borde del fondo y el de la hoja frontal
+};
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -80,6 +90,63 @@ export class App implements OnDestroy {
     FLUTTER: 6
   };
 
+  // Silueta de carpeta
+  readonly folderShape = FOLDER_SHAPE;
+
+  folderPath = '';
+  folderFrontPath = '';
+  folderSize = { w: 0, h: 0 };
+  folderTabWidth = FOLDER_SHAPE.tabWidth;
+
+  @ViewChild('folder')
+  folder?: ElementRef<HTMLDivElement>;
+
+  private folderResizeObserver?: ResizeObserver;
+
+  get activeProjectLabel(): string {
+    for (const group of this.projectGroups) {
+      const item = group.items.find(i => i.id === this.activeProject);
+      if (item) return item.label;
+    }
+    return '';
+  }
+
+  projectGroups = [
+    {
+      title: 'Proyectos',
+      items: [
+        { id: 'fuelprice', label: 'FuelPrice' },
+        { id: 'autophoto', label: 'AutoPhoto' },
+        { id: 'stayhere', label: 'Stayhere' }
+      ]
+    },
+    {
+      title: 'Experiencia',
+      items: [
+        { id: 'wynix', label: 'Wynix' },
+        { id: 'agile-solutions', label: 'Agile Solutions' }
+      ]
+    },
+    {
+      title: 'Otros proyectos',
+      items: [
+        { id: 'work-together', label: 'Work Together' },
+        { id: 'nfc-access', label: 'NFC Access' },
+        { id: 'ticket-manager', label: 'Ticket Manager' },
+        { id: 'detector-blancos', label: 'Detector de blancos' }
+      ]
+    }
+  ];
+
+  activeProject = 'fuelprice';
+
+  @ViewChild('documentsPanel')
+  documentsPanel?: ElementRef<HTMLDivElement>;
+  
+  private projectsObserver?: IntersectionObserver;
+  private programmaticScroll = false;
+  private scrollReleaseTimer?: ReturnType<typeof setTimeout>;
+
   private bubbleMouse = {
     x: 0,
     y: 0,
@@ -99,6 +166,8 @@ export class App implements OnDestroy {
   @ViewChild('fluidCanvas')
   fluidCanvas?: ElementRef<HTMLCanvasElement>;
 
+  @ViewChild('pageContainer')
+  pageContainer?: ElementRef<HTMLElement>;
   // Fondo líquido WebGL
 
   private fluidRenderer?: THREE.WebGLRenderer;
@@ -166,6 +235,8 @@ export class App implements OnDestroy {
 
     requestAnimationFrame(() => {
       this.initializeFluidBackground();
+      this.initializeProjectsObserver();
+      this.initializeFolderOutline();
     });
   }
 
@@ -256,6 +327,10 @@ export class App implements OnDestroy {
 
   ngOnDestroy(): void {
     this.destroyed = true;
+    this.projectsObserver?.disconnect();
+    this.folderResizeObserver?.disconnect();
+    this.documentsPanel?.nativeElement.removeEventListener('scroll', this.onProjectsScroll);
+    clearTimeout(this.scrollReleaseTimer);
 
     if (this.cycleTimer) {
       clearTimeout(this.cycleTimer);
@@ -570,6 +645,140 @@ export class App implements OnDestroy {
     this.fluidAnimationFrame = requestAnimationFrame(this.animateFluidBackground);
   };
 
+  scrollToTop(): void {
+    this.pageContainer?.nativeElement.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  selectProject(id: string): void {
+    const panel = this.documentsPanel?.nativeElement;
+    const target = panel?.querySelector<HTMLElement>(`[id="${id}"]`);
+
+    if (!panel || !target) return;
+
+    // Marcamos la carpeta al instante y evitamos que el observer
+    // la cambie mientras el panel se desplaza hasta el destino
+    this.activeProject = id;
+    this.lockProjectsObserver();
+
+    panel.scrollTo({
+      top: target.offsetTop,
+      behavior: 'smooth'
+    });
+  }
+
+  private lockProjectsObserver(): void {
+    this.programmaticScroll = true;
+
+    clearTimeout(this.scrollReleaseTimer);
+
+    // Se libera cuando el panel deja de moverse
+    this.scrollReleaseTimer = setTimeout(() => {
+      this.programmaticScroll = false;
+    }, 150);
+  }
+
+  private onProjectsScroll = (): void => {
+    if (this.programmaticScroll) {
+      this.lockProjectsObserver();
+    }
+  };
+
+    private initializeFolderOutline(): void {
+    const element = this.folder?.nativeElement;
+
+    if (!element || this.folderResizeObserver) return;
+
+    const update = (): void => {
+      const w = element.clientWidth;
+      const h = element.clientHeight;
+
+      if (!w || !h) return;
+
+      this.folderSize = { w, h };
+      this.folderTabWidth = Math.min(FOLDER_SHAPE.tabWidth, w * 0.6);
+      this.folderPath = this.buildFolderPath(w, h);
+      this.folderFrontPath = this.buildFrontPath(w);
+
+      this.cdr.detectChanges();
+    };
+
+    update();
+
+    this.folderResizeObserver = new ResizeObserver(update);
+    this.folderResizeObserver.observe(element);
+  }
+
+  // Contorno completo: pestaña arriba a la izquierda + cuerpo
+  private buildFolderPath(w: number, h: number): string {
+    const { tabHeight: T, tabRadius: tr, curve: c, radius: r } = FOLDER_SHAPE;
+    const o = 1; // margen para que la línea no se recorte
+    const tabWidth = Math.min(FOLDER_SHAPE.tabWidth, w * 0.6);
+    const a = tabWidth - c;
+
+    return [
+      `M ${o} ${h - o - r}`,
+      `V ${o + tr}`,
+      `A ${tr} ${tr} 0 0 1 ${o + tr} ${o}`,           // esquina de la pestaña
+      `H ${a}`,
+      `C ${a + c * 0.55} ${o} ${a + c * 0.45} ${T} ${a + c} ${T}`, // bajada suave
+      `H ${w - o - r}`,
+      `A ${r} ${r} 0 0 1 ${w - o} ${T + r}`,           // esquina superior derecha
+      `V ${h - o - r}`,
+      `A ${r} ${r} 0 0 1 ${w - o - r} ${h - o}`,       // inferior derecha
+      `H ${o + r}`,
+      `A ${r} ${r} 0 0 1 ${o} ${h - o - r}`,           // inferior izquierda
+      'Z'
+    ].join(' ');
+  }
+
+  // Borde superior de la hoja frontal
+  private buildFrontPath(w: number): string {
+    const { tabHeight: T, frontGap: g, radius: r } = FOLDER_SHAPE;
+    const o = 1;
+    const f = T + g;
+
+    return [
+      `M ${o} ${f + r}`,
+      `A ${r} ${r} 0 0 1 ${o + r} ${f}`,
+      `H ${w - o - r}`,
+      `A ${r} ${r} 0 0 1 ${w - o} ${f + r}`
+    ].join(' ');
+  }
+
+  private initializeProjectsObserver(): void {
+    const panel = this.documentsPanel?.nativeElement;
+
+    if (!panel || this.projectsObserver) return;
+
+    panel.addEventListener('scroll', this.onProjectsScroll, { passive: true });
+
+    // Detecta qué proyecto cruza la línea central del panel
+    this.projectsObserver = new IntersectionObserver(
+      entries => {
+        if (this.programmaticScroll) return;
+
+        const visible = entries.find(entry => entry.isIntersecting);
+
+        if (visible && visible.target.id !== this.activeProject) {
+          this.activeProject = visible.target.id;
+          this.cdr.detectChanges();
+        }
+      },
+      {
+        root: panel,
+        rootMargin: '-50% 0px -50% 0px',
+        threshold: 0
+      }
+    );
+
+    panel.querySelectorAll('article').forEach(article => {
+      this.projectsObserver!.observe(article);
+    });
+  }
+
   private initializeBubbles(): void {
     const area = this.bubbleArea?.nativeElement;
 
@@ -769,5 +978,4 @@ export class App implements OnDestroy {
   onBubbleMouseLeave(): void {
     this.bubbleMouse.active = false;
   }
-
 }
